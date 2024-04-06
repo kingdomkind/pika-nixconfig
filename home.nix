@@ -22,8 +22,13 @@
     # EDITOR = "emacs";
   };
 
-  #services.flatpak.uninstalledUnmanaged = true;
-  #services.flatpak.packages = ["dev.vencord.Vesktop"];
+  #xdg.mimeApps = {
+  #  enable = true;
+  #
+  #  defaultApplications = {
+  #
+  #  };
+  #};
 
   programs.kitty = {
     enable = true;
@@ -33,35 +38,43 @@
     };
   };
 
-  systemd.user.services = {
+  #systemd.user.services = {
     #path = [pkgs.bash];
-    change-wallpaper = {
-      Unit = { Description = "Changes the Hyprland wallpaper randomly"; };
-      Install.WantedBy = ["multi-user.target"];
-      Service = {
-        Type = "oneshot";
-        ExecStart = "/etc/nixos/scripts/wallpaper/change-wallpaper.sh";
-        #User = "pika";
-      };
-    };
-  };
+  #  change-wallpaper = {
+  #    Unit = { Description = "Changes the Hyprland wallpaper randomly"; };
+  #    #Install.WantedBy = ["multi-user.target"];
+  #    Install.WantedBy = ["default.target"];
+  #    Service = {
+  #      Type = "oneshot";
+  #      ExecStart = "/etc/nixos/scripts/wallpaper/change-wallpaper.sh";
+  #      User = "pika";
+  #    };
+  #  };
+  #};
 
-  systemd.user.timers = {
-    change-wallpaper = {
-      Unit = { Description = "Triggers a wallpaper change at every X minutes"; };
-      Install.WantedBy = ["timers.target"];
-      Timer = {
-        OnUnitActiveSec = "1m";
-        Unit = "change-wallpaper.service";
-      };
-    };
-  };
+  #systemd.user.timers = {
+  #  change-wallpaper = {
+  #    Unit = { Description = "Triggers a wallpaper change at every X minutes"; };
+  #    Install.WantedBy = ["timers.target"];
+  #    Timer = {
+  #      OnUnitActiveSec = "1m";
+  #      Unit = "change-wallpaper.service";
+  #    };
+  #  };
+  #};
 
   # Enabling programs
   programs.home-manager.enable = true;
   wayland.windowManager.hyprland.enable = true;
 
   home.file = {
+    "/home/pika/.config/electron22-flags.conf" = {
+      text = ''
+        --enable-features=UseOzonePlatform
+        --ozone-platform=wayland
+      '';
+    };
+
     "/home/pika/.config/rofi/config.rasi" = {
        text = ''
         @import "/home/pika/.cache/wal/colors-rofi-dark"
@@ -181,12 +194,12 @@
         "custom/exit" = {
            format = "   ";
            tooltip = false;
-           on-click = "hyprctl dispatch exit";
+           on-click = "rofi -show power-menu -modi power-menu:rofi-power-menu";
         };
  
         "cpu" = {
           interval = 1;
-          format = "| C {usage}% ";
+          format = " | C {usage}% ";
         };
 
         "memory" = {
@@ -207,11 +220,11 @@
         "network" = {
           "format" = "{ifname}";
           "format-wifi" = "  {signalStrength}%";
-          "format-ethernet" = "  ↑ {bandwidthUpBytes}  ↓ {bandwidthDownBytes}";
+          "format-ethernet" = " ";
           "format-disconnected" = "Disconnected";
           "tooltip-format" = "  {ifname} via {gwaddri}";
           "tooltip-format-wifi" = "  {ifname} @ {essid}\nIP: {ipaddr}\nStrength: {signalStrength}%\nFreq: {frequency}MHz\nUp: {bandwidthUpBits} Down: {bandwidthDownBits}";
-          "tooltip-format-ethernet" = "  {ifname}\nIP: {ipaddr}\n up: {bandwidthUpBits} down: {bandwidthDownBits}";
+          "tooltip-format-ethernet" = "  {ifname}\nIP: {ipaddr}\n ↑ {bandwidthUpBits} ↓ {bandwidthDownBits}";
           "tooltip-format-disconnected" = "Disconnected";
           "max-length" = 50;
         };
@@ -233,7 +246,7 @@
         };
 
        "clock" = {
-          "format" = " {:%H:%M %a} ";
+          "format" = " | {:%H:%M %a} ";
           "tooltip-format" = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
 
@@ -301,19 +314,27 @@
     "$terminal" = "kitty";
     "$fileManager" = "nemo";
     "$menu" = "rofi -show drun";
-    "$browser" = "brave";
+    "$browser" = "librewolf";
 
     exec-once = ["swww-daemon" "waybar" "sleep 1 && /etc/nixos/scripts/wallpaper/change-wallpaper.sh"];
 
-    "env" = ["XCURSOR_SIZE,24" "QT_QPA_PLATFORMTHEME,qt5ct" "HYPRCURSOR_THEME,rose-pine-hyprcursor"];
+    "env" = ["XCURSOR_SIZE,24" "QT_QPA_PLATFORMTHEME,qt5ct" "HYPRCURSOR_THEME,rose-pine-hyprcursor"
+              "LIBVA_DRIVER_NAME,nvidia"
+              "XDG_SESSION_TYPE,wayland"
+              "GBM_BACKEND,nvidia-drm"
+              "__GLX_VENDOR_LIBRARY_NAME,nvidia"
+              "WLR_NO_HARDWARE_CURSORS,1"
+              ""
+            ];
 
-    monitor = ",preferred,auto,1,transform,2";
+    monitor = ",preferred,auto,1";
     source = "/home/pika/.cache/wal/colors-hyprland.conf";
 
     "$mainMod" = "SUPER";
     bind =
     [
-      "$mainMod, B, exec, $browser"
+      "$mainMod, F, exec, flatpak run dev.vencord.Vesktop"
+      "$mainMod, D, exec, $browser"
       "$mainMod, Q, exec, $terminal"
       "$mainMod, C, killactive,"
       "$mainMod, M, exit,"
@@ -322,12 +343,16 @@
       "$mainMod, R, exec, /etc/nixos/scripts/wallpaper/change-wallpaper.sh"
       "$mainMod, P, pseudo," # dwindle
       "$mainMod, J, togglesplit," # dwindle
+      "$mainMod, X, exec, nautilus"
       "$mainMod, SPACE, exec, $menu"
-      "$mainMod, ESCAPE, exec, hyprctl dispatch exit"
+      "$mainMod SHIFT, V, exec, /etc/nixos/scripts/VM/start-VM.sh"
+      "$mainMod, ESCAPE, exec, rofi -show power-menu -modi power-menu:rofi-power-menu"
+      "$mainMod ALT, ESCAPE, exec, hyprctl dispatch exit"
       "$mainMod SHIFT, H, movewindow, l"
       "$mainMod SHIFT, L, movewindow, r"
       "$mainMod SHIFT, K, movewindow, u"
       "$mainMod SHIFT, J, movewindow, d"
+      "$mainMod SHIFT, F, fullscreen"
 
       # Move focus with mainMod + arrow keys
       "$mainMod, left, movefocus, l"
@@ -376,6 +401,8 @@
       "$mainMod SHIFT, left, resizeactive, -10 0"
       "$mainMod SHIFT, up, resizeactive, 0 -10"
       "$mainMod SHIFT, down, resizeactive, 0 10"
+      "ALT, PAGE_UP, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+      "ALT, PAGE_DOWN, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
     ];
 
     bindm = [
@@ -408,7 +435,7 @@
       };
 
       active_opacity = 1;
-      inactive_opacity = 0.9;
+      inactive_opacity = 0.94;
       fullscreen_opacity = 1;
 
       drop_shadow = "yes";

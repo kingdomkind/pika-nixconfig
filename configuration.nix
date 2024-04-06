@@ -1,14 +1,26 @@
-{ config, pkgs, home-manager, nix-flatpak, rose-pine-hyprcursor, ... }:
-# inputs use to be a param
+{ config, pkgs, lib, home-manager, nix-flatpak, rose-pine-hyprcursor, ... }:
 
 {
   imports =
     [
       ./hardware-configuration.nix
-      #home-manager.nixosModules.default
-      #nix-flatpak.nixosModules.nix-flatpak
     ];  
-
+  
+  hardware.opengl = { enable = true; driSupport = true; driSupport32Bit = true; };
+  
+  services.xserver.videoDrivers = ["nvidia"];
+  
+  hardware.nvidia = {
+    
+    modesetting.enable = true;
+    powerManagement.enable = false;
+    powerManagement.finegrained = false;
+    open = true;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  
+  };
+  
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -40,10 +52,51 @@
     variant = "";
   };
 
+  programs.dconf.enable = true;
+
+  virtualisation = {
+    libvirtd = {
+      enable = true;
+      qemu = {
+        swtpm.enable = true;
+        ovmf.enable = true;
+        ovmf.packages = [ pkgs.OVMFFull.fd ];
+      };
+    };
+    spiceUSBRedirection.enable = true;
+  };
+
+  services.spice-vdagentd.enable = true;
+
+    boot = {
+      initrd.kernelModules = [
+        "vfio_pci"
+        "vfio"
+        "vfio_iommu_type1"
+        #"vfio_virqfd"
+
+        "nvidia"
+        "nvidia_modeset"
+        "nvidia_uvm"
+        "nvidia_drm"
+      ];
+
+      kernelParams = [
+        # enable IOMMU
+        "amd_iommu=on"
+        "vfio-pci.ids=10de:13c0,10de:0fbb"
+      ];
+    };
+
+systemd.tmpfiles.rules = [
+#  "f /dev/shm/looking-glass 0660 pika qemu-libvirtd -"
+  "f /dev/shm/looking-glass 0660 pika kvm -"
+];
+
   users.users.pika = {
     isNormalUser = true;
     description = "pika";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm"];
     packages = with pkgs; [];
   };
 
@@ -64,20 +117,40 @@
 
   # List packages installed in system profile
   environment.systemPackages = with pkgs; [
+  
+    # GENERAL APPs
     killall
     swww
     neofetch
-    brave
     dunst
     slurp
     grim
-    wl-clipboard
     btop
     obs-studio
     rofi-wayland
+    rofi-power-menu
     gnome.nautilus
     vlc
     vim
+    nvitop
+    librewolf
+    teams-for-linux
+    ventoy-full
+    gparted
+    git
+
+    # FOR PROPERY SYSTEM FUNCTION
+    xdg-utils
+    wl-clipboard
+
+    # REQUIRED FOR VMs
+    virt-manager
+    spice spice-gtk
+    spice-protocol
+    win-virtio
+    win-spice
+    gnome.adwaita-icon-theme
+    looking-glass-client
   ];
 
   security.rtkit.enable = true;
@@ -101,12 +174,15 @@
 
   # List services that you want to enable:
    services.openssh.enable = true;
-   hardware.opengl.enable = true; # Hyprland won't boot without
    programs.hyprland.enable = true;
+   programs.steam.enable = true;
 
    services.flatpak.enable = true;
    services.flatpak.uninstallUnmanaged = true;
-   services.flatpak.packages = ["dev.vencord.Vesktop"];
+   services.flatpak.packages = ["dev.vencord.Vesktop" "com.github.xournalpp.xournalpp"];
+   services.devmon.enable = true;
+   services.gvfs.enable = true; 
+   services.udisks2.enable = true;
 
    # Default system version -- recommended to leave alone
    system.stateVersion = "23.11";
