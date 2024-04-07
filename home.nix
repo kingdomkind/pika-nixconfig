@@ -1,4 +1,4 @@
-{ config, pkgs, rose-pine-hyprcursor, ... }:
+{config, pkgs, rose-pine-hyprcursor, ... }:
 
 {
   home.username = "pika";
@@ -11,11 +11,6 @@
   home.packages = with pkgs; [
     rose-pine-hyprcursor.packages.x86_64-linux.default
   ];
-
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-  };
 
   # Home Manager can also manage your environment variables like below
   home.sessionVariables = {
@@ -38,36 +33,190 @@
     };
   };
 
-  #systemd.user.services = {
-    #path = [pkgs.bash];
-  #  change-wallpaper = {
-  #    Unit = { Description = "Changes the Hyprland wallpaper randomly"; };
-  #    #Install.WantedBy = ["multi-user.target"];
-  #    Install.WantedBy = ["default.target"];
-  #    Service = {
-  #      Type = "oneshot";
-  #      ExecStart = "/etc/nixos/scripts/wallpaper/change-wallpaper.sh";
-  #      User = "pika";
-  #    };
-  #  };
-  #};
-
-  #systemd.user.timers = {
-  #  change-wallpaper = {
-  #    Unit = { Description = "Triggers a wallpaper change at every X minutes"; };
-  #    Install.WantedBy = ["timers.target"];
-  #    Timer = {
-  #      OnUnitActiveSec = "1m";
-  #      Unit = "change-wallpaper.service";
-  #    };
-  #  };
-  #};
-
   # Enabling programs
   programs.home-manager.enable = true;
-  wayland.windowManager.hyprland.enable = true;
+  #wayland.windowManager.hyprland.enable = true;
 
   home.file = {
+    "/home/pika/.config/hypr/hyprland.conf" = { text = ''
+
+# Starting Programs
+#exec-once = /nix/store/f9w2kp8y55zvcyz33b5lnr7qwhx652y8-dbus-1.14.10/bin/dbus-update-activation-environment --systemd DISPLAY HYPRLAND_INSTANCE_SIGNATURE WAYLAND_DISPLAY XDG_CURRENT_DESKTOP && systemctl --user stop hyprland-session.target && systemctl --user start hyprland-session.target
+exec-once = dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP # for XDPH
+exec-once = dbus-update-activation-environment --systemd --all # for XDPH
+exec-once = systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP # for XDPH
+exec-once=swww-daemon
+exec-once=waybar
+exec-once=sleep 1 && /etc/nixos/scripts/wallpaper/change-wallpaper.sh
+exec-once=/etc/nixos/scripts/VM/start-VM.sh
+
+# Variables
+$browser=librewolf
+$fileManager=nautilus
+$mainMod=SUPER
+$menu=rofi -show drun
+$terminal=kitty
+$vmMod=SUPER
+$changeToVM=/etc/nixos/scripts/VM/change-to-VM.sh
+$changeFromVM=/etc/nixos/scripts/VM/change-from-VM.sh
+
+# Imports
+source=/home/pika/.cache/wal/colors-hyprland.conf
+
+# Environment Variables
+env=XCURSOR_SIZE,24
+env=QT_QPA_PLATFORMTHEME,qt5ct
+env=HYPRCURSOR_THEME,rose-pine-hyprcursor
+env=LIBVA_DRIVER_NAME,nvidia
+env=XDG_SESSION_TYPE,wayland
+env=GBM_BACKEND,nvidia-drm
+env=__GLX_VENDOR_LIBRARY_NAME,nvidia
+env=WLR_NO_HARDWARE_CURSORS,1
+env=ELECTRON_OZONE_PLATFORM_HINT,wayland
+
+# Monitor Settings
+monitor=,3840x2160@120,auto,1
+
+# Animation Settings
+animations {
+  bezier=myBezier, 0.05, 0.9, 0.1, 1.05
+  animation=windows, 1, 7, myBezier
+  animation=windowsOut, 1, 7, default, popin 80%
+  animation=border, 1, 10, default
+  animation=borderangle, 1, 8, default
+  animation=fade, 1, 7, default
+  animation=workspaces, 1, 6, default
+  enabled=yes
+}
+
+# Visual Settings
+decoration {
+  blur {
+    enabled=true
+    passes=1
+    size=3
+  }
+  active_opacity=1
+  col.shadow=rgba(1a1a1aee)
+  drop_shadow=yes
+  fullscreen_opacity=1
+  inactive_opacity=0.940000
+  rounding=10
+  shadow_range=4
+  shadow_render_power=3
+}
+
+dwindle {
+  preserve_split=yes
+  pseudotile=yes
+}
+
+general {
+  allow_tearing=false
+  border_size=2
+  col.active_border=rgba(33ccffee) rgba(00ff99ee) 45deg
+  col.inactive_border=$color11 # From the import
+  gaps_in=5
+  gaps_out=10
+  layout=dwindle
+}
+
+input {
+  follow_mouse=1
+  kb_layout=us
+}
+
+misc {
+  force_default_wallpaper=0
+}
+
+# Binds
+bind=$mainMod, F, exec, flatpak run dev.vencord.Vesktop
+bind=$mainMod, D, exec, $browser
+bind=$mainMod, Q, exec, $terminal
+bind=$mainMod, C, killactive,
+bind=$mainMod, M, exit,
+bind=$mainMod, V, togglefloating,
+bind=$mainMod, R, exec, /etc/nixos/scripts/wallpaper/change-wallpaper.sh
+bind=$mainMod SHIFT, R, exec, waybar
+bind=$mainMod, P, pseudo,
+bind=$mainMod, J, togglesplit,
+bind=$mainMod, X, exec, nautilus
+bind=$mainMod, SPACE, exec, $menu
+bind=$mainMod, ESCAPE, exec, rofi -show power-menu -modi power-menu:rofi-power-menu
+bind=$mainMod ALT, ESCAPE, exec, hyprctl dispatch exit
+bind=$mainMod SHIFT, H, movewindow, l
+bind=$mainMod SHIFT, L, movewindow, r
+bind=$mainMod SHIFT, K, movewindow, u
+bind=$mainMod SHIFT, J, movewindow, d
+bind=$mainMod SHIFT, F, fullscreen
+bind=$mainMod, left, movefocus, l
+bind=$mainMod, right, movefocus, r
+bind=$mainMod, up, movefocus, u
+bind=$mainMod, down, movefocus, d
+bind=$mainMod, 1, workspace, 1
+bind=$mainMod, 2, workspace, 2
+bind=$mainMod, 3, workspace, 3
+bind=$mainMod, 3, exec, $changeToVM
+bind=$mainMod, 4, workspace, 4
+bind=$mainMod, 5, workspace, 5
+bind=$mainMod, 6, workspace, 6
+bind=$mainMod, 7, workspace, 7
+bind=$mainMod, 8, workspace, 8
+bind=$mainMod, 9, workspace, 9
+bind=$mainMod, 0, workspace, 10
+bind=$mainMod SHIFT, 1, movetoworkspace, 1
+bind=$mainMod SHIFT, 2, movetoworkspace, 2
+bind=$mainMod SHIFT, 3, movetoworkspace, 3
+bind=$mainMod SHIFT, 4, movetoworkspace, 4
+bind=$mainMod SHIFT, 5, movetoworkspace, 5
+bind=$mainMod SHIFT, 6, movetoworkspace, 6
+bind=$mainMod SHIFT, 7, movetoworkspace, 7
+bind=$mainMod SHIFT, 8, movetoworkspace, 8
+bind=$mainMod SHIFT, 9, movetoworkspace, 9
+bind=$mainMod SHIFT, 0, movetoworkspace, 10
+bind=$mainMod, S, togglespecialworkspace, magic
+bind=$mainMod SHIFT, S, movetoworkspace, special:magic
+bind=$mainMod, mouse_down, workspace, e+1
+bind=$mainMod, mouse_up, workspace, e-1
+bind=ALT, INSERT, exec, grim -g "$(slurp -d)" - | wl-copy -t image/png
+
+# VM SUBMAP
+submap = vm
+bind= $vmMod, 1, workspace, 1
+bind = $vmMod, 1, exec, $changeFromVM
+bind=$vmMod, 2, workspace, 2
+bind = $vmMod, 2, exec, $changeFromVM
+# bind=$vmMod, 3, workspace, 3
+bind=$vmMod, 4, workspace, 4
+bind = $vmMod, 4, exec, $changeFromVM
+bind=$vmMod, 5, workspace, 5
+bind = $vmMod, 5, exec, $changeFromVM
+bind=$vmMod, 6, workspace, 6
+bind = $vmMod, 6, exec, $changeFromVM
+bind=$vmMod, 7, workspace, 7
+bind = $vmMod, 7, exec, $changeFromVM
+bind=$vmMod, 8, workspace, 8
+bind = $vmMod, 8, exec, $changeFromVM
+bind=$vmMod, 9, workspace, 9
+bind = $vmMod, 9, exec, $changeFromVM
+bind=$vmMod, 0, workspace, 10
+bind = $vmMod, 0, exec, $changeFromVM
+submap = reset
+
+# Bindes
+binde=$mainMod SHIFT, right, resizeactive, 10 0
+binde=$mainMod SHIFT, left, resizeactive, -10 0
+binde=$mainMod SHIFT, up, resizeactive, 0 -10
+binde=$mainMod SHIFT, down, resizeactive, 0 10
+binde=ALT, PAGE_UP, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+binde=ALT, PAGE_DOWN, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
+
+# Bindms
+bindm=$mainMod, mouse:272, movewindow
+bindm=$mainMod, mouse:273, resizewindow
+    '';};
+
     "/home/pika/.config/electron22-flags.conf" = {
       text = ''
         --enable-features=UseOzonePlatform
@@ -111,6 +260,7 @@
         monitor = 0
         follow = none
 
+        font = "jetbrains mono 10"
         width = 300
         height = (0,300)
 
@@ -171,7 +321,8 @@
   programs.bash = {
     enable = true;
     shellAliases = {
-      build-config = "sudo /etc/nixos/scripts/build/build-config.sh";
+      build-config = "sudo /home/pika/Software/pika-nixconfig/scripts/build/build-config.sh";
+      edit = "cd /home/pika/Software/pika-nixconfig";
     };
   };
 
@@ -212,10 +363,7 @@
           spacing = 10;
         };
 
-        "group/hardware" = {
-          orientation = "horizontal";
-          # modules = ["disk" "cpu" "memory"];
-        };
+        "hyprland/submap" = {"format" = "{}"; "max-length" = 30; "tooltip" = false; };
 
         "network" = {
           "format" = "{ifname}";
@@ -260,7 +408,7 @@
           format = "{class}";
         };
 
-        modules-left = ["custom/exit" "hyprland/workspaces" "custom/appmenu" "hyprland/window"];
+        modules-left = ["custom/exit" "hyprland/workspaces" "custom/appmenu" "hyprland/window" "hyprland/submap"];
         modules-center = ["wlr/taskbar"];
         modules-right = ["tray" "cpu" "memory" "network" "clock"];
       };
@@ -310,9 +458,10 @@
     '';
   };
 
+  /*
   wayland.windowManager.hyprland.settings = {
     "$terminal" = "kitty";
-    "$fileManager" = "nemo";
+    "$fileManager" = "nautilus";
     "$menu" = "rofi -show drun";
     "$browser" = "librewolf";
 
@@ -324,13 +473,16 @@
               "GBM_BACKEND,nvidia-drm"
               "__GLX_VENDOR_LIBRARY_NAME,nvidia"
               "WLR_NO_HARDWARE_CURSORS,1"
-              ""
+              "ELECTRON_OZONE_PLATFORM_HINT,wayland"
             ];
 
-    monitor = ",preferred,auto,1";
+    monitor = ",3840x2160@120,auto,1";
     source = "/home/pika/.cache/wal/colors-hyprland.conf";
 
     "$mainMod" = "SUPER";
+    "$vmMod" = "CTRL_ALT";
+
+   # submap = { regular = {
     bind =
     [
       "$mainMod, F, exec, flatpak run dev.vencord.Vesktop"
@@ -338,9 +490,9 @@
       "$mainMod, Q, exec, $terminal"
       "$mainMod, C, killactive,"
       "$mainMod, M, exit,"
-      "$mainMod, E, exec, $fileManager"
       "$mainMod, V, togglefloating,"
       "$mainMod, R, exec, /etc/nixos/scripts/wallpaper/change-wallpaper.sh"
+      "$mainMod SHIFT, R, exec, waybar"
       "$mainMod, P, pseudo," # dwindle
       "$mainMod, J, togglesplit," # dwindle
       "$mainMod, X, exec, nautilus"
@@ -410,7 +562,21 @@
       "$mainMod, mouse:272, movewindow"
       "$mainMod, mouse:273, resizewindow"
 
-    ];
+    ]; # };
+
+   #submap = {
+   #virtual-machine = { bind = [
+   #   "$vmMod, 1, workspace, 1"
+   #   "$vmMod, 2, workspace, 2"
+   #   "$vmMod, 3, workspace, 3"
+   #   "$vmMod, 4, workspace, 4"
+   #   "$vmMod, 5, workspace, 5"
+   #   "$vmMod, 6, workspace, 6"
+   #   "$vmMod, 7, workspace, 7"
+   #   "$vmMod, 8, workspace, 8"
+   #   "$vmMod, 9, workspace, 9"
+   #   "$vmMod, 0, workspace, 10"
+    #];};};
 
     misc = { force_default_wallpaper = 0; };
    
@@ -471,6 +637,7 @@
         "workspaces, 1, 6, default"
       ];
     };
-  };
+    */
+  # };
 }
 

@@ -10,6 +10,7 @@ if [ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]; then
   swww img $FINAL --transition-type wipe --transition-angle 30 --transition-fps 120 --transition-step 50
   killall -SIGUSR2 .waybar-wrapped
   pkill dunst
+  mkdir -p /home/pika/.config/dunst
   rm /home/pika/.config/dunst/dunstrc
   cp /home/pika/.cache/wal/dunstrc /home/pika/.config/dunst/dunstrc
   dunst

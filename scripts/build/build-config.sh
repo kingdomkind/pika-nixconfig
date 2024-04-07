@@ -5,5 +5,5 @@ if [ "$(id -u)" -ne 0 ]
   exit
 fi
 
-sudo nixos-rebuild switch --flake /etc/nixos/#default
+sudo nixos-rebuild switch --flake /home/pika/Software/pika-nixconfig/#default
 echo "Reached end of the build script"

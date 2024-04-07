@@ -138,6 +138,8 @@ systemd.tmpfiles.rules = [
     ventoy-full
     gparted
     git
+    kate
+    hyprland
 
     # FOR PROPERY SYSTEM FUNCTION
     xdg-utils
@@ -176,6 +178,7 @@ systemd.tmpfiles.rules = [
    services.openssh.enable = true;
    programs.hyprland.enable = true;
    programs.steam.enable = true;
+   #programs.hyprland = {enable = true;};   
 
    services.flatpak.enable = true;
    services.flatpak.uninstallUnmanaged = true;
