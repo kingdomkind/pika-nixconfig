@@ -140,6 +140,7 @@ systemd.tmpfiles.rules = [
     git
     kate
     hyprland
+    libsForQt5.koko
 
     # FOR PROPERY SYSTEM FUNCTION
     xdg-utils
