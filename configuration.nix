@@ -141,6 +141,7 @@ systemd.tmpfiles.rules = [
     kate
     hyprland
     libsForQt5.koko
+    prismlauncher
 
     # FOR PROPERY SYSTEM FUNCTION
     xdg-utils
