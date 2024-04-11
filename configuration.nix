@@ -142,6 +142,10 @@ systemd.tmpfiles.rules = [
     hyprland
     libsForQt5.koko
     prismlauncher
+    rustup
+    vscodium-fhs
+    betterbird
+    whatsapp-for-linux   
 
     # FOR PROPERY SYSTEM FUNCTION
     xdg-utils
