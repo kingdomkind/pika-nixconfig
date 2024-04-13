@@ -26,8 +26,11 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "pika-nix";
-  # networking.wireless.enable = true;
+  # networking.wireless.enable = true; # using wireless via network manager instead
   networking.networkmanager.enable = true;
+
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
 
   time.timeZone = "Europe/London";
 
@@ -73,7 +76,6 @@
         "vfio_pci"
         "vfio"
         "vfio_iommu_type1"
-        #"vfio_virqfd"
 
         "nvidia"
         "nvidia_modeset"
@@ -88,10 +90,9 @@
       ];
     };
 
-systemd.tmpfiles.rules = [
-#  "f /dev/shm/looking-glass 0660 pika qemu-libvirtd -"
-  "f /dev/shm/looking-glass 0660 pika kvm -"
-];
+  systemd.tmpfiles.rules = [
+    "f /dev/shm/looking-glass 0660 pika kvm -"
+  ];
 
   users.users.pika = {
     isNormalUser = true;
@@ -100,9 +101,7 @@ systemd.tmpfiles.rules = [
     packages = with pkgs; [];
   };
 
-  #services.flatpak.enable = true;
   home-manager = {
-    #extraSpecialArgs = { inherit inputs; };
     extraSpecialArgs = { inherit rose-pine-hyprcursor; };
     users = {
       "pika" = import ./home.nix;
@@ -146,6 +145,9 @@ systemd.tmpfiles.rules = [
     vscodium-fhs
     betterbird
     whatsapp-for-linux   
+    hyprpaper
+    lua
+    wireguard-tools
 
     # FOR PROPERY SYSTEM FUNCTION
     xdg-utils
@@ -184,7 +186,7 @@ systemd.tmpfiles.rules = [
    services.openssh.enable = true;
    programs.hyprland.enable = true;
    programs.steam.enable = true;
-   #programs.hyprland = {enable = true;};   
+   #programs.hyprland = {enable = true;};
 
    services.flatpak.enable = true;
    services.flatpak.uninstallUnmanaged = true;

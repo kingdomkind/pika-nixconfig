@@ -41,6 +41,22 @@
   };
 
   xdg.configFile."hypr/hyprland.conf".source = config.lib.file.mkOutOfStoreSymlink /home/pika/Software/pika-nixconfig/hyprland.conf;
+  # "/etc/wireguard".source = config.lib.file.mkOutOfStoreSymlink /home/pika/Software/pika-nixconfig/wireguard;
+
+  gtk = {
+    enable = true;
+    gtk3.extraConfig = {
+      Settings = ''
+        gtk-application-prefer-dark-theme=1
+      '';
+    };
+
+    gtk4.extraConfig = {
+      Settings = ''
+        gtk-application-prefer-dark-theme=1
+      '';
+    };
+  };
 
   home.file = {
     "/home/pika/.config/electron22-flags.conf" = {
@@ -217,7 +233,7 @@
         };
 
         modules-left = ["custom/exit" "hyprland/workspaces" "custom/appmenu" "hyprland/window" "hyprland/submap"];
-        modules-center = ["wlr/taskbar"];
+        #  modules-center = ["wlr/taskbar"];
         modules-right = ["tray" "cpu" "memory" "network" "clock"];
       };
     };
