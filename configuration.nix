@@ -49,6 +49,22 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+  systemd.services.VPNService = {
+    description = "Runs VPN on boot";
+    wantedBy = ["multi-user.target"];
+    path = [pkgs.wireguard-tools pkgs.coreutils];
+
+    # after = [ "network.target" ];
+         script = ''
+/home/pika/Software/pika-nixconfig/scripts/VPN/vpn_handler up
+      '';
+    serviceConfig = {
+      # ExecStart = "/home/pika/Software/pika-nixconfig/scripts/VPN/vpn_handler up";
+      User = "root";
+      Group = "root";
+    };
+  };
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -144,8 +160,7 @@
     rustup
     vscodium-fhs
     betterbird
-    whatsapp-for-linux   
-    hyprpaper
+    whatsapp-for-linux
     lua
     wireguard-tools
 
