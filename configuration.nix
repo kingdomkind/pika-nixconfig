@@ -1,4 +1,4 @@
-{ config, pkgs, lib, home-manager, nix-flatpak, rose-pine-hyprcursor, ... }:
+{ config, pkgs-unstable, pkgs-stable, lib, home-manager, nix-flatpak, rose-pine-hyprcursor, ... }:
 
 {
   imports =
@@ -52,9 +52,9 @@
   systemd.services.VPNService = {
     description = "Runs VPN on boot";
     wantedBy = ["multi-user.target"];
-    path = [pkgs.wireguard-tools pkgs.coreutils];
+    path = [pkgs-unstable.wireguard-tools pkgs-unstable.coreutils];
 
-    # after = [ "network.target" ];
+    after = [ "network.target" ];
          script = ''
 /home/pika/Software/pika-nixconfig/scripts/VPN/vpn_handler up
       '';
@@ -65,6 +65,18 @@
     };
   };
 
+/*
+  systemd.services.StartDefaultNetworkService = {
+    description = "Starts default VM network on boot";
+    wantedBy = ["multi-user.target"];
+    path = [pkgs.libvirt];
+    script = ''virsh net-start default'';
+    serviceConfig = {
+      User = "root";
+      Group = "root";
+    };
+  };
+*/
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -79,7 +91,7 @@
       qemu = {
         swtpm.enable = true;
         ovmf.enable = true;
-        ovmf.packages = [ pkgs.OVMFFull.fd ];
+        ovmf.packages = [ pkgs-unstable.OVMFFull.fd ];
       };
     };
     spiceUSBRedirection.enable = true;
@@ -114,7 +126,7 @@
     isNormalUser = true;
     description = "pika";
     extraGroups = [ "networkmanager" "wheel" "libvirtd" "kvm"];
-    packages = with pkgs; [];
+    packages = with pkgs-unstable; [];
   };
 
   home-manager = {
@@ -131,52 +143,59 @@
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # List packages installed in system profile
-  environment.systemPackages = with pkgs; [
-  
-    # GENERAL APPs
-    killall
-    swww
-    neofetch
-    dunst
-    slurp
-    grim
-    btop
-    obs-studio
-    rofi-wayland
-    rofi-power-menu
-    gnome.nautilus
-    vlc
-    vim
-    nvitop
-    librewolf
-    teams-for-linux
-    ventoy-full
-    gparted
-    git
-    kate
-    hyprland
-    libsForQt5.koko
-    prismlauncher
-    rustup
-    vscodium-fhs
-    betterbird
-    whatsapp-for-linux
-    lua
-    wireguard-tools
+  environment.systemPackages = 
 
-    # FOR PROPERY SYSTEM FUNCTION
-    xdg-utils
-    wl-clipboard
+    # UNSTABLE PACKAGES
+    (with pkgs-unstable; [
+      # GENERAL APPs
+      killall
+      swww
+      neofetch
+      dunst
+      slurp
+      grim
+      btop
+      obs-studio
+      rofi-wayland
+      rofi-power-menu
+      gnome.nautilus
+      vlc
+      vim
+      nvitop
+      librewolf
+      teams-for-linux
+      ventoy-full
+      gparted
+      git
+      kate
+      hyprland
+      libsForQt5.koko
+      prismlauncher
+      rustup
+      vscodium-fhs
+      betterbird
+      whatsapp-for-linux
+      lua
+      wireguard-tools
+      opentabletdriver
 
-    # REQUIRED FOR VMs
-    virt-manager
-    spice spice-gtk
-    spice-protocol
-    win-virtio
-    win-spice
-    gnome.adwaita-icon-theme
-    looking-glass-client
-  ];
+      # FOR PROPER SYSTEM FUNCTION
+      xdg-utils
+      wl-clipboard
+
+      # REQUIRED FOR VMs
+      virt-manager
+      spice spice-gtk
+      spice-protocol
+      win-virtio
+      win-spice
+      gnome.adwaita-icon-theme
+    ]) ++
+
+    # STABLE PACKAGES
+    (with pkgs-stable; [
+      looking-glass-client
+  ]);
 
   security.rtkit.enable = true;
   services.pipewire = {
@@ -188,7 +207,7 @@
     wireplumber.enable = true;
   };
 
-  fonts.packages = with pkgs; [
+  fonts.packages = with pkgs-unstable; [
     nerdfonts
   ];
 

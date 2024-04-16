@@ -45,18 +45,12 @@
 
   gtk = {
     enable = true;
-    gtk3.extraConfig = {
-      Settings = ''
-        gtk-application-prefer-dark-theme=1
-      '';
-    };
-
-    gtk4.extraConfig = {
-      Settings = ''
-        gtk-application-prefer-dark-theme=1
-      '';
+    theme = {
+      name = "Breeze-Dark";
+      package = pkgs.libsForQt5.breeze-gtk;
     };
   };
+
 
   home.file = {
     "/home/pika/.config/electron22-flags.conf" = {
@@ -205,7 +199,8 @@
         };
 
        "clock" = {
-          "format" = "{:%H:%M %a}";
+          "interval" = 1;
+          "format" = "{:%H:%M:%S %a}";
           "tooltip-format" = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
         };
 
