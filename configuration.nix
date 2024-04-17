@@ -6,37 +6,32 @@
       ./hardware-configuration.nix
     ];  
   
-  hardware.opengl = { enable = true; driSupport = true; driSupport32Bit = true; };
-  
+  # NVIDIA driver settings
+  hardware.opengl = { enable = true; driSupport = true; driSupport32Bit = true; };  
   services.xserver.videoDrivers = ["nvidia"];
-  
   hardware.nvidia = {
-    
     modesetting.enable = true;
-    powerManagement.enable = false;
-    powerManagement.finegrained = false;
+    powerManagement.enable = true;
+    powerManagement.finegrained = true;
     open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
-  
   };
   
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Networking + Bootloader
   networking.hostName = "pika-nix";
-  # networking.wireless.enable = true; # using wireless via network manager instead
   networking.networkmanager.enable = true;
-
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
+
+  # Localisation Properties
   time.timeZone = "Europe/London";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_GB.UTF-8";
-
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_GB.UTF-8";
     LC_IDENTIFICATION = "en_GB.UTF-8";
@@ -49,34 +44,32 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+
+  # Systemd Services
   systemd.services.VPNService = {
     description = "Runs VPN on boot";
     wantedBy = ["multi-user.target"];
-    path = [pkgs-unstable.wireguard-tools pkgs-unstable.coreutils];
-
-    after = [ "network.target" ];
-         script = ''
-/home/pika/Software/pika-nixconfig/scripts/VPN/vpn_handler up
-      '';
+    path = [pkgs-unstable.wireguard-tools pkgs-unstable.coreutils pkgs-unstable.openresolv];
+    after = [ "multi-user.target" ];
+    script = ''/home/pika/Software/pika-nixconfig/scripts/VPN/vpn_handler up'';
     serviceConfig = {
-      # ExecStart = "/home/pika/Software/pika-nixconfig/scripts/VPN/vpn_handler up";
       User = "root";
       Group = "root";
     };
   };
 
-/*
+
   systemd.services.StartDefaultNetworkService = {
     description = "Starts default VM network on boot";
     wantedBy = ["multi-user.target"];
-    path = [pkgs.libvirt];
-    script = ''virsh net-start default'';
+    path = [pkgs-unstable.libvirt];
+    script = ''virsh net-list | grep -q "default" && echo "default network already started" || virsh net-start default'';
     serviceConfig = {
       User = "root";
       Group = "root";
     };
   };
-*/
+
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "us";
@@ -178,6 +171,7 @@
       lua
       wireguard-tools
       opentabletdriver
+      qbittorrent
 
       # FOR PROPER SYSTEM FUNCTION
       xdg-utils
@@ -190,6 +184,7 @@
       win-virtio
       win-spice
       gnome.adwaita-icon-theme
+      virtiofsd
     ]) ++
 
     # STABLE PACKAGES
