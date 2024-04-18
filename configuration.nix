@@ -12,8 +12,8 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-    powerManagement.finegrained = true;
-    open = true;
+    powerManagement.finegrained = false;
+    open = false;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
@@ -44,6 +44,10 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "";
+  };
 
   # Systemd Services
   systemd.services.VPNService = {
@@ -70,12 +74,7 @@
     };
   };
 
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
-  };
-
+  # Virtualisation Settings
   programs.dconf.enable = true;
 
   virtualisation = {
@@ -92,29 +91,28 @@
 
   services.spice-vdagentd.enable = true;
 
-    boot = {
-      initrd.kernelModules = [
-        "vfio_pci"
-        "vfio"
-        "vfio_iommu_type1"
+  boot = {
+    initrd.kernelModules = [
+      "vfio_pci"
+      "vfio"
+      "vfio_iommu_type1"
+      "nvidia"
+      "nvidia_modeset"
+      "nvidia_uvm"
+      "nvidia_drm"
+    ];
 
-        "nvidia"
-        "nvidia_modeset"
-        "nvidia_uvm"
-        "nvidia_drm"
-      ];
-
-      kernelParams = [
-        # enable IOMMU
-        "amd_iommu=on"
-        "vfio-pci.ids=10de:13c0,10de:0fbb"
-      ];
-    };
+    kernelParams = [
+      "amd_iommu=on"
+      "vfio-pci.ids=10de:13c0,10de:0fbb"
+    ];
+  };
 
   systemd.tmpfiles.rules = [
     "f /dev/shm/looking-glass 0660 pika kvm -"
   ];
 
+  # Home manager setup
   users.users.pika = {
     isNormalUser = true;
     description = "pika";
@@ -129,13 +127,11 @@
     };
   };
 
-  # Allow unfree packages
+  # NixOS settings
   nixpkgs.config.allowUnfree = true;
-
-  # Enable Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  # List packages installed in system profile
+  # Install Packages
   environment.systemPackages = 
 
     # UNSTABLE PACKAGES
@@ -192,6 +188,12 @@
       looking-glass-client
   ]);
 
+  services.flatpak.packages = [
+    "dev.vencord.Vesktop" 
+    "com.github.xournalpp.xournalpp"
+  ];
+
+  # Audio (pipewire) settings
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -211,15 +213,13 @@
      enableSSHSupport = true;
    };
 
-  # List services that you want to enable:
-   services.openssh.enable = true;
+  # Enabling programs & services
    programs.hyprland.enable = true;
    programs.steam.enable = true;
-   #programs.hyprland = {enable = true;};
 
+   services.openssh.enable = true;
    services.flatpak.enable = true;
    services.flatpak.uninstallUnmanaged = true;
-   services.flatpak.packages = ["dev.vencord.Vesktop" "com.github.xournalpp.xournalpp"];
    services.devmon.enable = true;
    services.gvfs.enable = true; 
    services.udisks2.enable = true;
