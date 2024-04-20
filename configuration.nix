@@ -25,6 +25,7 @@
   # Networking + Bootloader
   networking.hostName = "pika-nix";
   networking.networkmanager.enable = true;
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
 
@@ -166,8 +167,9 @@
       whatsapp-for-linux
       lua
       wireguard-tools
-      opentabletdriver
       qbittorrent
+      libreoffice
+      opentabletdriver
 
       # FOR PROPER SYSTEM FUNCTION
       xdg-utils
@@ -223,6 +225,9 @@
    services.devmon.enable = true;
    services.gvfs.enable = true; 
    services.udisks2.enable = true;
+
+   hardware.opentabletdriver.enable = true;
+   hardware.opentabletdriver.daemon.enable = true;
 
    # Default system version -- recommended to leave alone
    system.stateVersion = "23.11";
