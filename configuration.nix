@@ -131,7 +131,7 @@
   # NixOS settings
   nixpkgs.config.allowUnfree = true;
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
+  
   # Install Packages
   environment.systemPackages = 
 
@@ -170,7 +170,9 @@
       qbittorrent
       libreoffice
       opentabletdriver
-
+      kitty
+      (ollama.override { acceleration = "cuda"; })
+   
       # FOR PROPER SYSTEM FUNCTION
       xdg-utils
       wl-clipboard
@@ -202,7 +204,6 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    #jack.enable = true;
     wireplumber.enable = true;
   };
 

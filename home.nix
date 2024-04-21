@@ -25,14 +25,6 @@
   #  };
   #};
 
-  programs.kitty = {
-    enable = true;
-
-    settings = {
-      include = "/home/pika/.cache/wal/colors-kitty.conf";
-    };
-  };
-
   # Enabling programs
   programs.home-manager.enable = true;
   wayland.windowManager.hyprland = {
@@ -41,7 +33,6 @@
   };
 
   xdg.configFile."hypr/hyprland.conf".source = config.lib.file.mkOutOfStoreSymlink /home/pika/Software/pika-nixconfig/hyprland.conf;
-  # "/etc/wireguard".source = config.lib.file.mkOutOfStoreSymlink /home/pika/Software/pika-nixconfig/wireguard;
 
   gtk = {
     enable = true;
@@ -53,6 +44,14 @@
 
 
   home.file = {
+    "/home/pika/.config/kitty/kitty.conf" = {
+      text = ''
+        background_opacity 0.9
+        dynamic_background_opacity yes
+        include /home/pika/.cache/wal/colors-kitty.conf
+      '';
+    };
+
     "/home/pika/.config/electron22-flags.conf" = {
       text = ''
         --enable-features=UseOzonePlatform
@@ -166,25 +165,9 @@
         };
 
         "network" = {
-          "format" = "{ifname}";
           "format-wifi" = "  {signalStrength}%";
           "format-ethernet" = " ";
           "format-disconnected" = "Disconnected";
-          "tooltip-format" = "  {ifname} via {gwaddri}";
-          "tooltip-format-wifi" = "  {ifname} @ {essid}\nIP: {ipaddr}\nStrength: {signalStrength}%\nFreq: {frequency}MHz\nUp: {bandwidthUpBits} Down: {bandwidthDownBits}";
-          "tooltip-format-ethernet" = "  {ifname}\nIP: {ipaddr}\n ↑ {bandwidthUpBits} ↓ {bandwidthDownBits}";
-          "tooltip-format-disconnected" = "Disconnected";
-          "max-length" = 50;
-        };
-
-       "bluetooth" = {
-	  "format" = " {status}";
-	  "format-connected" = " {device_alias} | ";
-	  "format-connected-battery" = " {device_alias} {device_battery_percentage}%";
-	  "tooltip-format" = "{controller_alias}\t{controller_address}\n\n{num_connections} connected";
-	  "tooltip-format-connected" = "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}";
-	  "tooltip-format-enumerate-connected" = "{device_alias}\t{device_address}";
-	  "tooltip-format-enumerate-connected-battery" = "{device_alias}\t{device_address}\t{device_battery_percentage}%";
         };
 
         "hyprland/workspaces" = {
@@ -208,9 +191,20 @@
           format = "{class}";
         };
 
+        "custom/system" = {
+          format = "{}";
+          exec = "/home/pika/Software/pika-nixconfig/scripts/stats/system.sh";
+          restart-interval = 1;
+        };
+
+        "custom/nvidia" = {
+          format = "{}";
+          exec = "/home/pika/Software/pika-nixconfig/scripts/stats/nvidia.sh";
+          restart-interval = 1;
+        };
+
         modules-left = ["hyprland/workspaces" "hyprland/window" ];
-        #  modules-center = [];
-        modules-right = ["tray" "bluetooth" "network" "clock"];
+        modules-right = ["tray" "custom/system" "custom/nvidia" "network" "clock"];
       };
     };
 
@@ -230,9 +224,10 @@
 
       #tray,
       #network,
-      #bluetooth,
       #window,
       #workspaces,
+      #custom-system,
+      #custom-nvidia,
       #clock {
         background-color: @background;
         margin-left: 5px;

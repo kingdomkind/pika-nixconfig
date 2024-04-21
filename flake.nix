@@ -28,7 +28,7 @@
     let 
       system = "x86_64-linux";
       lib = inputs.nixpkgs-unstable.lib;
-      pkgs-unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
+      pkgs-unstable = import inputs.nixpkgs-unstable { system = system; config.allowUnfree = true; };
       pkgs-stable = inputs.nixpkgs-stable.legacyPackages.${system};
 
       home-manager = inputs.home-manager;
