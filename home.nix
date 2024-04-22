@@ -17,14 +17,6 @@
     # EDITOR = "emacs";
   };
 
-  #xdg.mimeApps = {
-  #  enable = true;
-  #
-  #  defaultApplications = {
-  #
-  #  };
-  #};
-
   # Enabling programs
   programs.home-manager.enable = true;
   wayland.windowManager.hyprland = {
@@ -37,11 +29,15 @@
   gtk = {
     enable = true;
     theme = {
-      name = "Breeze-Dark";
-      package = pkgs.libsForQt5.breeze-gtk;
+      name = "Nordic";
+      package = pkgs.nordic;
     };
   };
 
+  qt.enable = true;
+  qt.platformTheme = "gtk";
+  qt.style.name = "adwaita-dark";
+  qt.style.package = pkgs.adwaita-qt;
 
   home.file = {
     "/home/pika/.config/kitty/kitty.conf" = {
@@ -49,6 +45,7 @@
         background_opacity 0.9
         dynamic_background_opacity yes
         include /home/pika/.cache/wal/colors-kitty.conf
+        confirm_os_window_close 0
       '';
     };
 
@@ -126,7 +123,6 @@
         frame_width = 1
         frame_color = "{color11}"
         background = "{color1}"
-        #foreground = "{color1}"
 
         gap_size = 0
         separator_color = frame

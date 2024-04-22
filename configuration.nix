@@ -167,12 +167,13 @@
       whatsapp-for-linux
       lua
       wireguard-tools
-      qbittorrent
+      qbittorrent-qt5
       libreoffice
       opentabletdriver
       kitty
       (ollama.override { acceleration = "cuda"; })
-   
+      vesktop
+
       # FOR PROPER SYSTEM FUNCTION
       xdg-utils
       wl-clipboard
@@ -193,7 +194,7 @@
   ]);
 
   services.flatpak.packages = [
-    "dev.vencord.Vesktop" 
+   # "dev.vencord.Vesktop" 
     "com.github.xournalpp.xournalpp"
   ];
 
