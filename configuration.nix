@@ -173,8 +173,9 @@
       kitty
       (ollama.override { acceleration = "cuda"; })
       vesktop
+      waybar
 
-      # FOR PROPER SYSTEM FUNCTION
+      # DEPENDENCIES
       xdg-utils
       wl-clipboard
 
