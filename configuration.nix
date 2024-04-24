@@ -174,6 +174,8 @@
       (ollama.override { acceleration = "cuda"; })
       vesktop
       waybar
+      android-tools
+      signal-desktop
 
       # DEPENDENCIES
       xdg-utils
@@ -195,7 +197,6 @@
   ]);
 
   services.flatpak.packages = [
-   # "dev.vencord.Vesktop" 
     "com.github.xournalpp.xournalpp"
   ];
 
