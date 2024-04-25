@@ -157,7 +157,6 @@
       ventoy-full
       gparted
       git
-      kate
       hyprland
       libsForQt5.koko
       prismlauncher
