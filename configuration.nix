@@ -13,7 +13,7 @@
     modesetting.enable = true;
     powerManagement.enable = true;
     powerManagement.finegrained = false;
-    open = false;
+    open = true;
     nvidiaSettings = true;
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
@@ -22,13 +22,17 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  boot.extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
+  boot.kernelModules = [
+    "v4l2loopback"
+  ];
+
   # Networking + Bootloader
   networking.hostName = "pika-nix";
   networking.networkmanager.enable = true;
   boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
-
 
   # Localisation Properties
   time.timeZone = "Europe/London";
@@ -168,13 +172,14 @@
       wireguard-tools
       qbittorrent-qt5
       libreoffice
-      opentabletdriver
       kitty
       (ollama.override { acceleration = "cuda"; })
       vesktop
       waybar
       android-tools
       signal-desktop
+      hyprpaper
+      freetube
 
       # DEPENDENCIES
       xdg-utils

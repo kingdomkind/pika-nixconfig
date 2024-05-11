@@ -43,6 +43,12 @@
   qt.style.package = pkgs.adwaita-qt;
 
   home.file = {
+    "/home/pika/.config/hypr/hyprpaper.conf" = {
+      text = ''
+        splash = false
+      '';
+    };
+
     "/home/pika/.config/kitty/kitty.conf" = {
       text = ''
         background_opacity 0.9

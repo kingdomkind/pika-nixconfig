@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -x
 
 if [ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]; then
   SCRIPT_DIRECTORY="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
@@ -7,7 +8,9 @@ if [ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]; then
   FINAL="$SCRIPT_DIRECTORY/pictures/$WALLPAPER"
 
   wal -i "$FINAL"
-  swww img $FINAL --transition-type wipe --transition-angle 30 --transition-fps 120 --transition-step 50
+  hyprctl hyprpaper unload all
+  hyprctl hyprpaper preload "$FINAL"
+  hyprctl hyprpaper wallpaper "DP-2,$FINAL"
   killall -SIGUSR2 .waybar-wrapped
   pkill dunst
   mkdir -p /home/pika/.config/dunst
