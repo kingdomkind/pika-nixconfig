@@ -3,15 +3,14 @@
 monitor = 0
 follow = none
 
-font = "jetbrains mono 10"
-width = 300
+font = "jetbrains mono 16"
+width = 600
 height = (0,300)
 
 origin = top-right
-offset = 15x30
-scale = 0
+offset = 30x45
 notification_limit = 20
-timeout = 3
+timeout = 2
 
 progress_bar = true
 progress_bar_height = 10
@@ -21,6 +20,8 @@ progress_bar_max_width = 300
 progress_bar_corner_radius = 10
 icon_corner_radius = 5
 corner_radius = 10
+frame_max_width = 600
+
 
 # Show how many messages are currently hidden (because of
 # notification_limit).
@@ -31,9 +32,9 @@ separator_height = 2
 padding = 8
 horizontal_padding = 8
 text_icon_padding = 0
-frame_width = 1
-frame_color = "{color11}"
-background = "{color1}"
+frame_width = 4
+frame_color = "{color11}85"
+background = "{color1}85"
 
 gap_size = 0
 separator_color = frame

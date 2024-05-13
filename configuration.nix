@@ -167,7 +167,6 @@
       rustup
       vscodium-fhs
       betterbird
-      whatsapp-for-linux
       lua
       wireguard-tools
       qbittorrent-qt5
@@ -180,6 +179,7 @@
       signal-desktop
       hyprpaper
       freetube
+      satty
 
       # DEPENDENCIES
       xdg-utils
@@ -202,6 +202,7 @@
 
   services.flatpak.packages = [
     "com.github.xournalpp.xournalpp"
+    "com.rtosta.zapzap"
   ];
 
   # Audio (pipewire) settings
