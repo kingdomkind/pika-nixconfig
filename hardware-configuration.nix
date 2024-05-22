@@ -21,6 +21,12 @@
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/E93C-8465";
       fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
+    };
+
+  fileSystems."/mnt/ssd" =
+    { device = "/dev/disk/by-uuid/24fdc1e6-511e-4eda-a7ab-59a396f21b7d";
+      fsType = "ext4";
     };
 
   swapDevices =
@@ -34,7 +40,6 @@
   networking.useDHCP = lib.mkDefault true;
   # networking.interfaces.enp5s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.virbr0.useDHCP = lib.mkDefault true;
-  # networking.interfaces.vnet0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlp4s0.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
