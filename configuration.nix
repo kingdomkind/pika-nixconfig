@@ -36,7 +36,7 @@
   boot.kernelModules = [
     "v4l2loopback"
   ];
-  # boot.kernelPackages = pkgs-stable.linuxPackages_latest;
+  boot.kernelPackages = pkgs-unstable.linuxPackages_zen;
 
   # Networking + Bootloader
   networking.hostName = "pika-nix";
@@ -155,7 +155,7 @@
       # GENERAL APPs
       killall
       swww
-      neofetch
+      fastfetch
       dunst
       slurp
       grim
