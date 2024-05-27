@@ -185,6 +185,7 @@
       satty
       cura
       prusa-slicer
+      telegram-desktop
 
       # DEPENDENCIES
       xdg-utils
